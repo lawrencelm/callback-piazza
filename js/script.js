@@ -179,7 +179,6 @@
         );
         expandedID = id;
     }
-
     function addResponseForm(response) {
         console.log("THIS IS RESPONSE ", response);
         console.log("RESPONSE NAME", response.name.value);
