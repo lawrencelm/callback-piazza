@@ -204,6 +204,8 @@
                 }*/
                 console.log("responses after appending are ", allQuestions[i]["responses"]);
                 question = allQuestions[i];
+                storeQuestions(question);
+                break;
             }
 
         }
