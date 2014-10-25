@@ -31,8 +31,9 @@
     rightPane.innerHTML = templates.renderQuestionForm();
     
     if(localStorage.questions) {
-    var allQuestions = JSON.parse(localStorage.questions);
-    for(var i = 0; i < allQuestions.length - 1 ; i++) {
+    var allQuestions = getStoredQuestions();//JSON.parse(localStorage.questions);
+    for(var i = 0; i < allQuestions.length ; i++) {
+        if(allQuestions[i]){
         leftPane.innerHTML += templates.renderQuestion({
                 questions: [
                     {"question": allQuestions[i]["question"],
@@ -41,6 +42,7 @@
                     }
                 ]
             });
+        }
     }
 }
 
@@ -102,7 +104,7 @@
         console.log("all questions is ", allQuestions);
         console.log("looking for ", idSearch);
         for(var i = 0; i < allQuestions.length ; i++) {
-            if(allQuestions[i]["id"] == idSearch){
+            if(allQuestions[i] && allQuestions[i]["id"] == idSearch){
                 return allQuestions[i];
             }
         }
@@ -116,7 +118,7 @@
             }
         }*/
         return {
-            "question": "error", "responses": [], "subject": "error"
+            "question": "error", "responses": [], "subject": "error", "id": "error"
         }
     }
 
@@ -179,6 +181,21 @@
         );
         expandedID = id;
     }
+
+    function removeFromStorage(index){
+        var questions = getStoredQuestions();
+        //questions = questions.splice(index, 1);
+        //questions.remove(index);
+        delete questions[index];// + 1];
+        /*questions[index] = {
+            "question": "error", "responses": [], "subject": "error", "id": "error"
+        }*/
+        for(var i = 0; i < questions.length ; i ++) {
+            console.log("after removal ", questions[i]);
+        }
+        localStorage.questions = JSON.stringify(questions);
+    }
+
     function addResponseForm(response) {
         console.log("THIS IS RESPONSE ", response);
         console.log("RESPONSE NAME", response.name.value);
@@ -187,9 +204,8 @@
         var finalResponse = {name: response.name.value ,response: response.response.value};
        // var finalResponse = "{\"name\":\"" + response.name.value + "\",\"response\": \"" + response.response.value+"\"}";
         var allQuestions = JSON.parse(localStorage.questions);
-
-        for(var i = 0; i < allQuestions.length - 1 ; i++) {
-            if(allQuestions[i]["id"] == expandedID){
+        for(var i = 0; i < allQuestions.length; i++) {
+            if(allQuestions[i] && allQuestions[i]["id"] == expandedID){
                 console.log("current responses are ", allQuestions[i]["responses"]);
                 allQuestions[i]["responses"].push(finalResponse);
                 /*if(allQuestions[i]["responses"] == []){
@@ -203,6 +219,8 @@
                 }*/
                 console.log("responses after appending are ", allQuestions[i]["responses"]);
                 question = allQuestions[i];
+                //localStorage.removeItem(expandedID);
+                removeFromStorage(i);
                 storeQuestions(question);
                 break;
             }
@@ -223,7 +241,19 @@
         }
         );
     }
+    function resolve(id) {
+        console.log("resolve function");
+        var index;
+        var allQuestions = getStoredQuestions();
+        for(var i = 0; i < allQuestions.length; i++) {
+            if(allQuestions[i] && allQuestions[i]["id"] == id){
+                index = i;
+                break;
+            }
 
+        }
+        removeFromStorage(index);
+    }
     // TODO: tasks 1-5 and one extension
 
     // display question form initially
@@ -267,6 +297,15 @@
             addResponseForm(event.target);
         }
     } );
+    rightPane.addEventListener("click", function(event){
+        var clickTarget = event.target;
+        if(clickTarget.className === "resolve btn"){
+            console.log("RESOLVE");
+            event.preventDefault();
+            var id = document.getElementById('response-form').value;
+            resolve(id);
+        }
+    });
     /*
     questionForm.addEventListener("submit", function(event) {
         event.preventDefault();
