@@ -191,7 +191,7 @@
             "question": "error", "responses": [], "subject": "error", "id": "error"
         }*/
         for(var i = 0; i < questions.length ; i ++) {
-            console.log("after removal ", questions[i]);
+            console.log("after removal ", questions[i], " element ", i);
         }
         localStorage.questions = JSON.stringify(questions);
     }
@@ -246,12 +246,12 @@
         var index;
         var allQuestions = getStoredQuestions();
         for(var i = 0; i < allQuestions.length; i++) {
-            if(allQuestions[i] && allQuestions[i]["id"] == id){
+            if(allQuestions[i] && allQuestions[i]["id"] == expandedID){
                 index = i;
                 break;
             }
-
         }
+        console.log("index wanted is ", index, " and given is ", id, " for expandedID ", expandedID);
         removeFromStorage(index);
     }
     // TODO: tasks 1-5 and one extension
@@ -302,7 +302,7 @@
         if(clickTarget.className === "resolve btn"){
             console.log("RESOLVE");
             event.preventDefault();
-            var id = document.getElementById('response-form').value;
+            var id = document.getElementById("response-form").value;//document.getElementById('response-form').question_id.value;
             resolve(id);
         }
     });
